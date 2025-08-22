@@ -49,10 +49,6 @@ async function processRegistration() {
     var password = passwordInput.value;
     var repeatPassword = repeatPasswordInput.value;
     const request = new Request(`${BASE_URL}/register`, requestOptions);
-    fetch(request)
-        .then(response => response.json)
-        .then(json => console.log(json))
-        .catch(error => console.error('Error: ', error));
     
     // Example placeholder:
     // const registerBody = { username, email, password };
