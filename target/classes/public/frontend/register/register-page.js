@@ -72,9 +72,8 @@ const requestOptions = {
         referrerPolicy: "no-referrer",
         body: JSON.stringify(registerBody)
     };
-    const request = new Request(`${BASE_URL}/register`, requestOptions);
     try {
-        const response = await fetch(request, requestOptions);
+        const response = await fetch(`${BASE_URL}/register`, requestOptions);
         if (response.status === 201) {
             window.location.href = "../login/login-page.html";
             return;
