@@ -48,10 +48,16 @@ async function processRegistration() {
     var email = emailInput.value;
     var password = passwordInput.value;
     var repeatPassword = repeatPasswordInput.value;
-    const request = new Request(`${BASE_URL}/register`, requestOptions);
-    
+    if (!username || !email || !password || !repeatPassword) {
+        alert("All fields must be filled");
+        return;
+    }
+    if (password !== repeatPassword) {
+        alert("Passwords must match");
+        return;
+    }
     // Example placeholder:
-    // const registerBody = { username, email, password };
+    const registerBody = { username, email, password };
 const requestOptions = {
         method: "POST",
         mode: "cors",
@@ -66,5 +72,18 @@ const requestOptions = {
         referrerPolicy: "no-referrer",
         body: JSON.stringify(registerBody)
     };
-    // await fetch(...)
+    const request = new Request(`${BASE_URL}/register`, requestOptions);
+    try {
+        const response = await fetch(request, requestOptions);
+        if (response.status === 201) {
+            window.location.href = "../login/login-page.html";
+            return;
+        } else if (response.status === 409) {
+            throw new Error("An account with that username or email already exists");
+        } else {
+            throw new Error("Something went wrong");
+        }
+    } catch (error) {
+        alert(error);
+    }
 }
