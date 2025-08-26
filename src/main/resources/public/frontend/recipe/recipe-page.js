@@ -74,7 +74,7 @@ window.addEventListener("DOMContentLoaded", () => {
     async function searchRecipes() {
         // Implement search logic here
         var search = searchInput.value;
-        
+
     }
 
     /**
@@ -89,7 +89,26 @@ window.addEventListener("DOMContentLoaded", () => {
         // Implement add logic here
         var addRecipeInstructions = addRecipeInstructionsInput.value;
         var addRecipeName = addRecipeNameInput.value;
-
+        const token = sessionStorage.getItem("auth-token");
+        if (!addRecipeInstructions || !addRecipeName) {
+            alert("Both fields must be filled");
+            return;
+        }
+        const requestOptions = {
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            },
+            body: JSON.stringify({ addRecipeName, addRecipeInstructions })
+        };
+        const response = await fetch(`${BASE_URL}/recipes`, requestOptions);
+        if (response.status === 201) {
+            recipes.push();
+            refreshRecipeList(); 
+            addRecipeInstructionsInput.value = "";
+            addRecipeNameInput.value = "";
+        }
     }
 
     /**
@@ -104,7 +123,23 @@ window.addEventListener("DOMContentLoaded", () => {
         // Implement update logic here
         var updateRecipeInstructions = updateRecipeInstructionsInput.value;
         var updateRecipeName = updateRecipeNameInput.value;
-
+        if (!updateRecipeInstructions || !updateRecipeName) {
+            alert("Both fields must be filled");
+            return;
+        }
+        const requestOptions = {
+            method: 'PUT',
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ updateRecipeName, updateRecipeInstructions })
+        };
+        const response = await fetch(`${BASE_URL}/recipes`, requestOptions);
+        if (response.status === 201) {
+            refreshRecipeList(); 
+            updateRecipeInstructionsInput.value = "";
+            updateRecipeNameInput.value = "";
+        }
     }
 
     /**
@@ -117,7 +152,21 @@ window.addEventListener("DOMContentLoaded", () => {
     async function deleteRecipe() {
         // Implement delete logic here
         var deleteRecipeName = deleteRecipeNameInput.value;
-
+        if (!deleteRecipeName) {
+            alert("Please fill in the field");
+        }
+        const requestOptions = {
+            method: 'DELETE',
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ deleteRecipeName })
+        };
+        const response = await fetch(`${BASE_URL}/recipes`, requestOptions);
+        if (response.status === 201) {
+            refreshRecipeList(); 
+            deleteRecipeNameInput.value = "";
+        }
     }
 
     /**
@@ -128,7 +177,8 @@ window.addEventListener("DOMContentLoaded", () => {
      */
     async function getRecipes() {
         // Implement get logic here
-        var recipes = recipeList.value;
+        var currentRecipes = recipeList.value;
+        recipes = currentRecipes;
     }
 
     /**
