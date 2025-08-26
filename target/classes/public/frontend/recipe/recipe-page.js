@@ -16,15 +16,35 @@ window.addEventListener("DOMContentLoaded", () => {
      * - Admin link and logout button
      * - Search input
     */
-    
+    const addRecipeNameInput = document.getElementById("add-recipe-name-input");
+    const addRecipeInstructionsInput = document.getElementById("add-recipe-instructions-input");
+    const updateRecipeNameInput = document.getElementById("update-recipe-name-input");
+    const updateRecipeInstructionsInput = document.getElementById("update-recipe-instructions-input");
+    const deleteRecipeNameInput = document.getElementById("delete-recipe-name-input");
+
+    const recipeList = document.getElementById("recipe-list");
+
+    const adminLink = document.getElementById("admin-link");
+
+    const logoutButton = document.getElementById("logout-button");
+    const addRecipeButton = document.getElementById("add-recipe-submit-input");
+    const updateRecipeButton = document.getElementById("update-recipe-submit-input");
+    const deleteRecipeButton = document.getElementById("delete-recipe-submit-input");
+    const searchButton = document.getElementById("search-button");
+
+    const searchInput = document.getElementById("search-input");
     /*
      * TODO: Show logout button if auth-token exists in sessionStorage
      */
-
+    if (sessionStorage.getItem("auth-token")) {
+        logoutButton.style.display = "block";
+    }
     /*
      * TODO: Show admin link if is-admin flag in sessionStorage is "true"
      */
-
+    if (sessionStorage.getItem("is-admin") === true) {
+        adminLink.style.display = "block";
+    }
     /*
      * TODO: Attach event handlers
      * - Add recipe button → addRecipe()
@@ -33,11 +53,16 @@ window.addEventListener("DOMContentLoaded", () => {
      * - Search button → searchRecipes()
      * - Logout button → processLogout()
      */
+    addRecipeButton.onclick = addRecipe;
+    updateRecipeButton.onclick = updateRecipe;
+    deleteRecipeButton.onclick = deleteRecipe;
+    searchButton.onclick = searchRecipes;
+    logoutButton.onclick = processLogout;
 
     /*
      * TODO: On page load, call getRecipes() to populate the list
      */
-
+    getRecipes();
 
     /**
      * TODO: Search Recipes Function
@@ -48,6 +73,8 @@ window.addEventListener("DOMContentLoaded", () => {
      */
     async function searchRecipes() {
         // Implement search logic here
+        var search = searchInput.value;
+        
     }
 
     /**
@@ -60,6 +87,9 @@ window.addEventListener("DOMContentLoaded", () => {
      */
     async function addRecipe() {
         // Implement add logic here
+        var addRecipeInstructions = addRecipeInstructionsInput.value;
+        var addRecipeName = addRecipeNameInput.value;
+
     }
 
     /**
@@ -72,6 +102,9 @@ window.addEventListener("DOMContentLoaded", () => {
      */
     async function updateRecipe() {
         // Implement update logic here
+        var updateRecipeInstructions = updateRecipeInstructionsInput.value;
+        var updateRecipeName = updateRecipeNameInput.value;
+
     }
 
     /**
@@ -83,6 +116,8 @@ window.addEventListener("DOMContentLoaded", () => {
      */
     async function deleteRecipe() {
         // Implement delete logic here
+        var deleteRecipeName = deleteRecipeNameInput.value;
+
     }
 
     /**
@@ -93,6 +128,7 @@ window.addEventListener("DOMContentLoaded", () => {
      */
     async function getRecipes() {
         // Implement get logic here
+        var recipes = recipeList.value;
     }
 
     /**
