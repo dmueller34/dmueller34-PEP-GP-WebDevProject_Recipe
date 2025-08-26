@@ -33,7 +33,9 @@ let ingredients = [];
 /* 
  * TODO: On page load, call getIngredients()
  */
-
+window.addEventListener("DOMContentLoaded", () => {
+    getIngredients();
+})
 
 /**
  * TODO: Add Ingredient Function
