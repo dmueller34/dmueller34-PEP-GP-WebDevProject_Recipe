@@ -37,13 +37,13 @@ window.addEventListener("DOMContentLoaded", () => {
      * TODO: Show logout button if auth-token exists in sessionStorage
      */
     if (window.sessionStorage.getItem("auth-token")) {
-        logoutButton.style.display = "block";
+        logoutButton.style.display = "inline-block";
     }
     /*
      * TODO: Show admin link if is-admin flag in sessionStorage is "true"
      */
     if (window.sessionStorage.getItem("is-admin") === "true") {
-        adminLink.style.display = "block";
+        adminLink.style.display = "inline";
     }
     /*
      * TODO: Attach event handlers
@@ -74,16 +74,10 @@ window.addEventListener("DOMContentLoaded", () => {
     async function searchRecipes() {
         // Implement search logic here
         var search = searchInput.value.trim();
-        const requestOptions = {
-            method: 'POST',
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ search })
-        };
         try {
-            const response = await fetch(`${BASE_URL}/recipes`, requestOptions);
+            const response = await fetch(`${BASE_URL}/recipes?name=${encodeURIComponent(search)}`);
             if (response.status === 200) {
+                recipes = await response.json();
                 refreshRecipeList();
                 return;
             } else {
@@ -105,11 +99,15 @@ window.addEventListener("DOMContentLoaded", () => {
      */
     async function addRecipe() {
         // Implement add logic here
-        var addRecipeInstructions = addRecipeInstructionsInput.value;
-        var addRecipeName = addRecipeNameInput.value;
+        var instructions = addRecipeInstructionsInput.value.trim();
+        var name = addRecipeNameInput.value.trim();
         const token = window.sessionStorage.getItem("auth-token");
-        if (!addRecipeInstructions || !addRecipeName) {
+        if (!instructions || !name) {
             alert("Both fields must be filled");
+            return;
+        }
+        if (!token) {
+            alert("You are not logged in");
             return;
         }
         const requestOptions = {
@@ -118,11 +116,11 @@ window.addEventListener("DOMContentLoaded", () => {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${token}`
             },
-            body: JSON.stringify({ addRecipeName, addRecipeInstructions })
+            body: JSON.stringify({ name, instructions })
         };
         const response = await fetch(`${BASE_URL}/recipes`, requestOptions);
-        if (response.status === 201) {
-            recipes.push(response.body);
+        if (response.ok) {
+            await getRecipes();
             refreshRecipeList(); 
             addRecipeInstructionsInput.value = "";
             addRecipeNameInput.value = "";
@@ -139,9 +137,9 @@ window.addEventListener("DOMContentLoaded", () => {
      */
     async function updateRecipe() {
         // Implement update logic here
-        var updateRecipeInstructions = updateRecipeInstructionsInput.value;
-        var updateRecipeName = updateRecipeNameInput.value;
-        if (!updateRecipeInstructions || !updateRecipeName) {
+        var instructions = updateRecipeInstructionsInput.value.trim();
+        var name = updateRecipeNameInput.value.trim();
+        if (!instructions || !name) {
             alert("Both fields must be filled");
             return;
         }
@@ -150,10 +148,12 @@ window.addEventListener("DOMContentLoaded", () => {
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({ updateRecipeName, updateRecipeInstructions })
+            body: JSON.stringify({ name, instructions })
         };
-        const response = await fetch(`${BASE_URL}/recipes`, requestOptions);
-        if (response.status === 201) {
+        const targetRecipe = recipes.find(recipe => recipe.name === name);
+        const response = await fetch(`${BASE_URL}/recipes/${encodeURIComponent(targetRecipe.id)}`, requestOptions);
+        if (response.status === 200) {
+            await getRecipes();
             refreshRecipeList(); 
             updateRecipeInstructionsInput.value = "";
             updateRecipeNameInput.value = "";
@@ -169,8 +169,8 @@ window.addEventListener("DOMContentLoaded", () => {
      */
     async function deleteRecipe() {
         // Implement delete logic here
-        var deleteRecipeName = deleteRecipeNameInput.value;
-        if (!deleteRecipeName) {
+        var name = deleteRecipeNameInput.value;
+        if (!name) {
             alert("Please fill in the field");
         }
         const requestOptions = {
@@ -178,11 +178,12 @@ window.addEventListener("DOMContentLoaded", () => {
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({ deleteRecipeName })
+            body: JSON.stringify({ name })
         };
-        const response = await fetch(`${BASE_URL}/recipes`, requestOptions);
-        if (response.status === 201) {
-            recipes.pop(response.body);
+        const targetRecipe = recipes.find(recipe => recipe.name === name);
+        const response = await fetch(`${BASE_URL}/recipes/${encodeURIComponent(targetRecipe.id)}`, requestOptions);
+        if (response.status === 200) {
+            await getRecipes();
             refreshRecipeList(); 
             deleteRecipeNameInput.value = "";
         }
@@ -196,8 +197,9 @@ window.addEventListener("DOMContentLoaded", () => {
      */
     async function getRecipes() {
         // Implement get logic here
-        var currentRecipes = recipeList.value;
-        recipes = currentRecipes;
+        const response = await fetch(`${BASE_URL}/recipes`);
+        recipes = await response.json();
+        refreshRecipeList();
     }
 
     /**
@@ -209,9 +211,16 @@ window.addEventListener("DOMContentLoaded", () => {
     function refreshRecipeList() {
         // Implement refresh logic here
         recipeList.innerHTML = "";
-        for (const recipe in recipes) {
+        for (const recipe of recipes) {
             const li = document.createElement("li");
-            
+            li.dataset.id = recipe.id;
+            const name = document.createElement("strong");
+            name.textContent = recipe.name;
+            const instructions = document.createElement("p");
+            instructions.textContent = recipe.instructions;
+            li.appendChild(name);
+            li.appendChild(instructions);
+            recipeList.appendChild(li);
         }
     }
 
@@ -231,12 +240,13 @@ window.addEventListener("DOMContentLoaded", () => {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${token}`
             },
-            body: JSON.stringify({ addRecipeName, addRecipeInstructions })
+            body: JSON.stringify({  })
         };
         try {
             const response = await fetch(`${BASE_URL}/logout`, requestOptions);
             if (response.status === 200) {
                 window.sessionStorage.removeItem("auth-token");
+                window.sessionStorage.removeItem("is-admin");
                 window.location.href = "../login/login-page.html";
                 return;
             } else {
