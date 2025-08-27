@@ -76,12 +76,12 @@ window.addEventListener("DOMContentLoaded", () => {
         var search = searchInput.value.trim();
         try {
             const response = await fetch(`${BASE_URL}/recipes?name=${encodeURIComponent(search)}`);
-            if (response.status === 200) {
+            if (response.ok) {
                 recipes = await response.json();
                 refreshRecipeList();
                 return;
             } else {
-                throw new Error("Cannot find recipe");
+                throw new Error("Cannot find recipes");
             }
         } catch (error) {
             alert(error);
@@ -118,13 +118,20 @@ window.addEventListener("DOMContentLoaded", () => {
             },
             body: JSON.stringify({ name, instructions })
         };
-        const response = await fetch(`${BASE_URL}/recipes`, requestOptions);
-        if (response.ok) {
-            await getRecipes();
-            refreshRecipeList(); 
-            addRecipeInstructionsInput.value = "";
-            addRecipeNameInput.value = "";
+        try {
+            const response = await fetch(`${BASE_URL}/recipes`, requestOptions);
+            if (response.ok) {
+                await getRecipes();
+                refreshRecipeList(); 
+                addRecipeInstructionsInput.value = "";
+                addRecipeNameInput.value = "";
+            } else {
+                throw new Error("Unable to add recipe");
+            }
+        } catch (error) {
+            alert(error);
         }
+        
     }
 
     /**
@@ -151,13 +158,20 @@ window.addEventListener("DOMContentLoaded", () => {
             body: JSON.stringify({ name, instructions })
         };
         const targetRecipe = recipes.find(recipe => recipe.name === name);
-        const response = await fetch(`${BASE_URL}/recipes/${encodeURIComponent(targetRecipe.id)}`, requestOptions);
-        if (response.status === 200) {
-            await getRecipes();
-            refreshRecipeList(); 
-            updateRecipeInstructionsInput.value = "";
-            updateRecipeNameInput.value = "";
+        try {
+            const response = await fetch(`${BASE_URL}/recipes/${encodeURIComponent(targetRecipe.id)}`, requestOptions);
+            if (response.ok) {
+                await getRecipes();
+                refreshRecipeList(); 
+                updateRecipeInstructionsInput.value = "";
+                updateRecipeNameInput.value = "";
+            } else {
+                throw new Error("Unable to update recipe");
+            }
+        } catch (error) {
+            alert(error);
         }
+        
     }
 
     /**
@@ -181,12 +195,19 @@ window.addEventListener("DOMContentLoaded", () => {
             body: JSON.stringify({ name })
         };
         const targetRecipe = recipes.find(recipe => recipe.name === name);
-        const response = await fetch(`${BASE_URL}/recipes/${encodeURIComponent(targetRecipe.id)}`, requestOptions);
-        if (response.status === 200) {
-            await getRecipes();
-            refreshRecipeList(); 
-            deleteRecipeNameInput.value = "";
+        try {
+            const response = await fetch(`${BASE_URL}/recipes/${encodeURIComponent(targetRecipe.id)}`, requestOptions);
+            if (response.ok) {
+                await getRecipes();
+                refreshRecipeList(); 
+                deleteRecipeNameInput.value = "";
+            } else {
+                throw new Error("Unable to delete recipe");
+            }
+        } catch (error) {
+            alert(error);
         }
+        
     }
 
     /**
@@ -244,7 +265,7 @@ window.addEventListener("DOMContentLoaded", () => {
         };
         try {
             const response = await fetch(`${BASE_URL}/logout`, requestOptions);
-            if (response.status === 200) {
+            if (response.ok) {
                 window.sessionStorage.removeItem("auth-token");
                 window.sessionStorage.removeItem("is-admin");
                 window.location.href = "../login/login-page.html";

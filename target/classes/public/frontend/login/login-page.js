@@ -77,7 +77,7 @@ async function processLogin() {
         // - Response will be a space-separated string: "token123 true"
         // - Split the string into token and isAdmin flag
         // - Store both in sessionStorage using sessionStorage.setItem()
-        if (response.status === 200) {
+        if (response.ok) {
             const text = await response.text();
             let str = text.split(" ");
             window.sessionStorage.setItem("auth-token", str[0]);
