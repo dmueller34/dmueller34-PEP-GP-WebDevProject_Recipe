@@ -80,8 +80,8 @@ async function processLogin() {
         if (response.ok) {
             const text = await response.text();
             let str = text.split(" ");
-            window.sessionStorage.setItem("auth-token", str[0]);
-            window.sessionStorage.setItem("is-admin", str[1]);
+            window.sessionStorage.setItem("auth-token", str[0].trim());
+            window.sessionStorage.setItem("is-admin", str[1].trim());
             setTimeout(function() {
                 window.location.href = "../recipe/recipe-page.html";
             }, 500);

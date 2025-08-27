@@ -37,13 +37,13 @@ window.addEventListener("DOMContentLoaded", () => {
      * TODO: Show logout button if auth-token exists in sessionStorage
      */
     if (window.sessionStorage.getItem("auth-token")) {
-        logoutButton.style.display = "inline-block";
+        logoutButton.style.visibility = "visible";
     }
     /*
      * TODO: Show admin link if is-admin flag in sessionStorage is "true"
      */
     if (window.sessionStorage.getItem("is-admin") === "true") {
-        adminLink.style.display = "inline";
+        adminLink.style.visibility = "visible";
     }
     /*
      * TODO: Attach event handlers
@@ -218,9 +218,18 @@ window.addEventListener("DOMContentLoaded", () => {
      */
     async function getRecipes() {
         // Implement get logic here
-        const response = await fetch(`${BASE_URL}/recipes`);
-        recipes = await response.json();
-        refreshRecipeList();
+        try {
+            const response = await fetch(`${BASE_URL}/recipes`);
+            if (response.ok) {
+                recipes = await response.json();
+                refreshRecipeList();
+            } else {
+                throw new Error("Could not get the recipes");
+            }  
+        } catch (error) {
+            alert(error)
+        }
+        
     }
 
     /**
