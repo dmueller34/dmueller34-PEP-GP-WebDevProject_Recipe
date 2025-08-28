@@ -17,10 +17,6 @@ const deleteIngredientNameInput = document.getElementById("delete-ingredient-nam
 const ingredientListContainer = document.getElementById("ingredient-list");
 const adminLink = document.getElementById("back-link");
 
-if (window.sessionStorage.getItem("is-admin") === "true") {
-    adminLink.style.visibility = "visible";
-}
-
 /* 
  * TODO: Attach 'onclick' events to:
  * - "add-ingredient-submit-button" → addIngredient()
@@ -37,9 +33,7 @@ let ingredients = [];
 /* 
  * TODO: On page load, call getIngredients()
  */
-window.addEventListener("DOMContentLoaded", () => {
-    getIngredients();
-})
+getIngredients();
 
 /**
  * TODO: Add Ingredient Function
